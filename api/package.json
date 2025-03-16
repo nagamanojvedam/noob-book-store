@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "server": "nodemon server.js"
   },
   "devDependencies": {
     "dotenv": "^16.4.7",

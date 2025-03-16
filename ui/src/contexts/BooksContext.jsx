@@ -1,4 +1,5 @@
 import axios from "axios";
+import { enqueueSnackbar } from "notistack";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const apiUrl = "http://localhost:3000/books";
@@ -16,42 +17,78 @@ function BooksProvider({ children }) {
   }, []);
 
   const getBooks = async () => {
-    const {
-      data: {
-        data: { books },
-      },
-    } = await axios(apiUrl);
+    try {
+      const {
+        data: {
+          data: { books },
+        },
+      } = await axios(`${apiUrl}`);
 
-    setBooks(books);
+      setBooks(books);
+    } catch (err) {
+      console.error(err.message);
+      enqueueSnackbar({ message: "Cannot get all books", variant: "error" });
+    }
   };
 
   const createBook = async (data) => {
-    await axios(apiUrl, {
-      method: "POST",
-      data,
-    });
+    try {
+      await axios(`${apiUrl}`, {
+        method: "POST",
+        data,
+      });
 
-    await getBooks();
+      await getBooks();
+      enqueueSnackbar({ message: "Book Created", variant: "success" });
+    } catch (err) {
+      console.error(err.message);
+      enqueueSnackbar({ message: "Cannot create Book", variant: "error" });
+    }
   };
 
   const deleteBook = async (id) => {
-    await axios(`${apiUrl}/${id}`, { method: "DELETE" });
-    await getBooks();
+    try {
+      await axios(`${apiUrl}/${id}`, { method: "DELETE" });
+      enqueueSnackbar({ message: "Book Deleted", variant: "success" });
+    } catch (err) {
+      console.error(err.message);
+      enqueueSnackbar({ message: "Cannot Delete Book", variant: "error" });
+    } finally {
+      await getBooks();
+    }
   };
 
   const getBookById = async (id) => {
-    const {
-      data: {
-        data: { book },
-      },
-    } = await axios(`${apiUrl}/${id}`);
+    try {
+      const {
+        data: {
+          data: { book },
+        },
+      } = await axios(`${apiUrl}/${id}`);
 
-    return book;
+      return book;
+    } catch (err) {
+      console.error(err.message);
+      enqueueSnackbar({ message: "Cannot find the Book", variant: "error" });
+      return {};
+    }
   };
+
   const updateBook = async (id, data) => {
-    await axios(`${apiUrl}/${id}`, { method: "PATCH", data });
-    await getBooks();
+    try {
+      await axios(`${apiUrl}/${id}`, { method: "PATCH", data });
+      enqueueSnackbar({
+        message: "Book edited successfully",
+        variant: "success",
+      });
+    } catch (err) {
+      console.error(err.message);
+      enqueueSnackbar({ message: "Cannot update book", variant: "error" });
+    } finally {
+      await getBooks();
+    }
   };
+
   return (
     <BooksContext.Provider
       value={{

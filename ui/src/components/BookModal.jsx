@@ -9,7 +9,6 @@ function BookModal() {
   useEffect(() => {
     const getBook = async (id) => {
       const book = await getBookById(id);
-      console.log(book);
       setBook(book);
     };
     getBook(modalId);
@@ -17,7 +16,7 @@ function BookModal() {
 
   return (
     <div
-      className="absolute top-0 left-0 flex h-screen w-full items-center justify-center bg-gray-950/40"
+      className="absolute top-0 left-0 flex h-dvh w-full items-center justify-center bg-gray-950/40"
       onClick={() => setShowModal(false)}
     >
       <div
